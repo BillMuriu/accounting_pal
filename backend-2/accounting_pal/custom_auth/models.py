@@ -1,8 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
-
-class User(AbstractUser):
+class CustomUser(models.Model):
     # User roles
     ROLE_CHOICES = [
         ('principal', 'School Principal'),
@@ -12,6 +10,10 @@ class User(AbstractUser):
     ]
 
     # Adding fields
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150, unique=True)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
     role = models.CharField(
         max_length=20,
         choices=ROLE_CHOICES,
