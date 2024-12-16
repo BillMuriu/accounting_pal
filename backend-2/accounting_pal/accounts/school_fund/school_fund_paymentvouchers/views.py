@@ -1,84 +1,130 @@
 from rest_framework import generics
 from .models import SchoolFundPaymentVoucher
 from .serializers import SchoolFundPaymentVoucherSerializer
-from accounts.operations.operations_receipts.models import OperationReceipt
 from accounts.operations.operations_receipts.serializers import OperationReceiptSerializer
+from accounts.rmi.rmi_receipts.serializers import RMIReceiptSerializer
+from accounts.tuition.tuition_receipts.serializers import TuitionReceiptSerializer
 
-class ListCreateSchoolFundPaymentVoucherView(generics.ListCreateAPIView):
+
+class ListCreateSchoolFundPaymentVoucherView(generics.CreateAPIView):
     queryset = SchoolFundPaymentVoucher.objects.all()
     serializer_class = SchoolFundPaymentVoucherSerializer
 
     def perform_create(self, serializer):
-        # Save the SchoolFundPaymentVoucher instance
-        school_fund_payment_voucher = serializer.save()
+        payment_voucher = serializer.save()
 
-        # Debugging: Log the saved payment voucher
-        print(f"Saved SchoolFundPaymentVoucher: {school_fund_payment_voucher}")
+        # Handle Operations Receipt Creation
+        if payment_voucher.vote_head == 'operations':
+            receipt_data = {
+                'account': 'operations_account',
+                'received_from': 'school_fund',  # The fund creating this payment voucher
+                'cash_bank': payment_voucher.payment_mode,
+                'total_amount': payment_voucher.amount_shs,
+                'date': payment_voucher.date,
+            }
+            receipt_serializer = OperationReceiptSerializer(data=receipt_data)
+            if receipt_serializer.is_valid():
+                receipt = receipt_serializer.save()
+                payment_voucher.operations_receipt = receipt
+                payment_voucher.save()
 
-        # Create an OperationReceipt instance using the data from the payment voucher
-        operation_receipt_data = {
-            'account': 'operations_account',  # Default value
-            'receivedFrom': 'school_fund',    # Changed to camelCase
-            'cashBank': school_fund_payment_voucher.payment_mode,  # Changed to camelCase
-            'totalAmount': school_fund_payment_voucher.amount_shs,  # Changed to camelCase
-            'date': school_fund_payment_voucher.date,
-            # Explicitly set rmiFund and otherVoteheads to None
-            'rmiFund': None,
-            'otherVoteheads': None,
-        }
+        # Handle RMI Receipt Creation
+        elif payment_voucher.vote_head == 'rmi':
+            receipt_data = {
+                'account': 'rmi_account',
+                'received_from': 'school_fund',
+                'cash_bank': payment_voucher.payment_mode,
+                'total_amount': payment_voucher.amount_shs,
+                'date': payment_voucher.date,
+            }
+            receipt_serializer = RMIReceiptSerializer(data=receipt_data)
+            if receipt_serializer.is_valid():
+                receipt = receipt_serializer.save()
+                payment_voucher.rmi_receipt = receipt
+                payment_voucher.save()
 
-        # Debugging: Log the operation receipt data being created
-        print(f"Creating OperationReceipt with data: {operation_receipt_data}")
+        # Handle Tuition Receipt Creation
+        elif payment_voucher.vote_head == 'tuition':
+            receipt_data = {
+                'account': 'tuition_account',
+                'received_from': 'school_fund',
+                'cash_bank': payment_voucher.payment_mode,
+                'total_amount': payment_voucher.amount_shs,
+                'date': payment_voucher.date,
+            }
+            receipt_serializer = TuitionReceiptSerializer(data=receipt_data)
+            if receipt_serializer.is_valid():
+                receipt = receipt_serializer.save()
+                payment_voucher.tuition_receipt = receipt
+                payment_voucher.save()
 
-        operation_receipt_serializer = OperationReceiptSerializer(data=operation_receipt_data)
-
-        if operation_receipt_serializer.is_valid():
-            operation_receipt = operation_receipt_serializer.save()
-            # Link the OperationReceipt to the SchoolFundPaymentVoucher
-            school_fund_payment_voucher.operation_receipt = operation_receipt
-            school_fund_payment_voucher.save()
-            print(f"Successfully created OperationReceipt: {operation_receipt}")
-        else:
-            # Handle serializer errors if needed
-            print("OperationReceiptSerializer errors:", operation_receipt_serializer.errors)
 
 class SchoolFundPaymentVoucherRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SchoolFundPaymentVoucher.objects.all()
     serializer_class = SchoolFundPaymentVoucherSerializer
 
     def perform_update(self, serializer):
-        # Save the updated payment voucher instance
-        school_fund_payment_voucher = serializer.save()
-        print(f'Updated School Fund Payment Voucher: {school_fund_payment_voucher}')
+        payment_voucher = serializer.save()
 
-        # If there's an associated OperationReceipt, update it as necessary
-        if school_fund_payment_voucher.operation_receipt:
-            operation_receipt_data = {
+        # Update Operations Receipt if linked
+        if payment_voucher.vote_head == 'operations' and payment_voucher.operations_receipt:
+            receipt_data = {
                 'account': 'operations_account',
-                'receivedFrom': 'school_fund',  # Changed to camelCase
-                'cashBank': school_fund_payment_voucher.payment_mode,  # Changed to camelCase
-                'totalAmount': school_fund_payment_voucher.amount_shs,  # Changed to camelCase
-                'date': school_fund_payment_voucher.date,
-                # Explicitly set rmiFund and otherVoteheads to None if they're not provided
-                'rmiFund': None,
-                'otherVoteheads': None,
+                'received_from': 'school_fund',
+                'cash_bank': payment_voucher.payment_mode,
+                'total_amount': payment_voucher.amount_shs,
+                'date': payment_voucher.date,
             }
-            operation_receipt_serializer = OperationReceiptSerializer(
-                school_fund_payment_voucher.operation_receipt, data=operation_receipt_data
+            receipt_serializer = OperationReceiptSerializer(
+                payment_voucher.operations_receipt, data=receipt_data
             )
-            if operation_receipt_serializer.is_valid():
-                operation_receipt_serializer.save()
-                print(f'Updated Operation Receipt: {school_fund_payment_voucher.operation_receipt}')
-            else:
-                print(f'Operation Receipt Serializer Errors on Update: {operation_receipt_serializer.errors}')
+            if receipt_serializer.is_valid():
+                receipt_serializer.save()
+
+        # Update RMI Receipt if linked
+        elif payment_voucher.vote_head == 'rmi' and payment_voucher.rmi_receipt:
+            receipt_data = {
+                'account': 'rmi_account',
+                'received_from': 'school_fund',
+                'cash_bank': payment_voucher.payment_mode,
+                'total_amount': payment_voucher.amount_shs,
+                'date': payment_voucher.date,
+            }
+            receipt_serializer = RMIReceiptSerializer(
+                payment_voucher.rmi_receipt, data=receipt_data
+            )
+            if receipt_serializer.is_valid():
+                receipt_serializer.save()
+
+        # Update Tuition Receipt if linked
+        elif payment_voucher.vote_head == 'tuition' and payment_voucher.tuition_receipt:
+            receipt_data = {
+                'account': 'tuition_account',
+                'received_from': 'school_fund',
+                'cash_bank': payment_voucher.payment_mode,
+                'total_amount': payment_voucher.amount_shs,
+                'date': payment_voucher.date,
+            }
+            receipt_serializer = TuitionReceiptSerializer(
+                payment_voucher.tuition_receipt, data=receipt_data
+            )
+            if receipt_serializer.is_valid():
+                receipt_serializer.save()
 
     def perform_destroy(self, instance):
-        # If there's an associated OperationReceipt, delete it
-        if instance.operation_receipt:
-            instance.operation_receipt.delete()
-            print(f'Deleted Operation Receipt: {instance.operation_receipt}')
+        # Delete linked Operation Receipt if exists
+        if instance.operations_receipt:
+            instance.operations_receipt.delete()
+
+        # Delete linked RMI Receipt if exists
+        if instance.rmi_receipt:
+            instance.rmi_receipt.delete()
+
+        # Delete linked Tuition Receipt if exists
+        if instance.tuition_receipt:
+            instance.tuition_receipt.delete()
+
         instance.delete()
-        print(f'Deleted School Fund Payment Voucher: {instance}')
 
 
 class ListSchoolFundPaymentVoucherView(generics.ListAPIView):

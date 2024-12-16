@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.operations.operations_receipts.models import OperationReceipt  # Import the OperationReceipt model
+from accounts.rmi.rmi_receipts.models import RMIReceipt
+from accounts.tuition.tuition_receipts.models import TuitionReceipt  # Import TuitionReceipt model
 
 class SchoolFundPaymentVoucher(models.Model):
     PAYMENT_MODE_CHOICES = [
@@ -27,9 +29,27 @@ class SchoolFundPaymentVoucher(models.Model):
     vote_details = models.TextField()
     date = models.DateTimeField()
 
+    # One-to-One relationship with RMIPaymentVoucher
+    rmi_receipt = models.OneToOneField(
+        RMIReceipt,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='school_fund_payment_voucher'
+    )
+
     # One-to-One relationship with OperationReceipt
     operation_receipt = models.OneToOneField(
         OperationReceipt,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='school_fund_voucher'
+    )
+
+    # One-to-One relationship with TuitionReceipt
+    tuition_receipt = models.OneToOneField(
+        TuitionReceipt,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
