@@ -48,7 +48,7 @@ class CreateUserView(APIView):
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
 
         # Create the magic link URL
-        magic_link = f"{settings.EMAIL_VERIFICATION_URL}/magic-login?token={token}"
+        magic_link = f"{settings.EMAIL_VERIFICATION_URL}/magic-link?token={token}"
 
         # Attempt to send the magic link
         try:
@@ -110,7 +110,7 @@ class RequestMagicLinkView(APIView):
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
 
         # Create the magic link URL
-        magic_link = f"{settings.EMAIL_VERIFICATION_URL}/magic-login?token={token}"
+        magic_link = f"{settings.EMAIL_VERIFICATION_URL}/magic-link?token={token}"
 
         # Attempt to send the magic link
         try:

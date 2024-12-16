@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt
+from accounts.rmi.rmi_receipts.models import RMIReceipt
+from django.contrib import auth
 
 class PaymentVoucher(models.Model):
     PAYMENT_MODE_CHOICES = [
@@ -28,11 +30,19 @@ class PaymentVoucher(models.Model):
     vote_details = models.TextField()
     date = models.DateTimeField()
 
-    # Relationship to SchoolFundReceipt
+    # Relationships to Receipts
     school_fund_receipt = models.OneToOneField(
-        SchoolFundReceipt,  # You can now directly use the imported model
+        SchoolFundReceipt,
         on_delete=models.SET_NULL, 
         null=True, 
+        blank=True,
+        related_name='payment_voucher'
+    )
+
+    rmi_receipt = models.OneToOneField(  # Add relationship for RMI Receipt
+        RMIReceipt,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
         related_name='payment_voucher'
     )

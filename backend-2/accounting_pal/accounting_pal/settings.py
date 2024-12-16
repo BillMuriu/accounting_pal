@@ -14,7 +14,7 @@ EMAIL_HOST_USER=os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD=os.environ['EMAIL_HOST_PASSWORD']
 
 
-EMAIL_VERIFICATION_URL = 'http://localhost:8000/custom_auth'
+EMAIL_VERIFICATION_URL = 'http://localhost:3000'
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,8 +39,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
