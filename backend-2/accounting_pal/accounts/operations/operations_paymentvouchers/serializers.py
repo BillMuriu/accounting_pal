@@ -13,19 +13,20 @@ class PaymentVoucherSerializer(serializers.ModelSerializer):
     voteDetails = serializers.CharField(source='vote_details')
     date = serializers.DateTimeField()
 
-    # Custom method to return the related SchoolFundReceipt fields
+    # Custom method to include related receipts
     schoolFundReceipt = serializers.SerializerMethodField()
+    rmiReceipt = serializers.SerializerMethodField()
 
     class Meta:
         model = PaymentVoucher
         fields = [
             'id', 'account', 'voucherNo', 'payeeName', 'particulars', 
             'amountShs', 'paymentMode', 'totalAmountInWords', 'preparedBy', 
-            'authorisedBy', 'voteHead', 'voteDetails', 'date', 'schoolFundReceipt'
+            'authorisedBy', 'voteHead', 'voteDetails', 'date', 
+            'schoolFundReceipt', 'rmiReceipt'  # Include both receipt fields
         ]
 
     def get_schoolFundReceipt(self, obj):
-        # Access the related SchoolFundReceipt directly from the PaymentVoucher model
         if hasattr(obj, 'school_fund_receipt') and obj.school_fund_receipt is not None:
             receipt = obj.school_fund_receipt
             return {
@@ -33,6 +34,16 @@ class PaymentVoucherSerializer(serializers.ModelSerializer):
                 'received_from': receipt.received_from,
                 'date': receipt.date,
                 'total_amount': receipt.total_amount,
-                # Add any other fields you need to return from the SchoolFundReceipt model
+            }
+        return None
+
+    def get_rmiReceipt(self, obj):
+        if hasattr(obj, 'rmi_receipt') and obj.rmi_receipt is not None:
+            receipt = obj.rmi_receipt
+            return {
+                'id': receipt.id,
+                'received_from': receipt.received_from,
+                'date': receipt.date,
+                'total_amount': receipt.total_amount,
             }
         return None
