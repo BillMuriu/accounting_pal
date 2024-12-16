@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import PaymentVoucher
+from accounts.tuition.tuition_receipts.models import TuitionReceipt  # Assuming TuitionReceipt exists in this module
 
 class PaymentVoucherSerializer(serializers.ModelSerializer):
     voucherNo = serializers.IntegerField(source='voucher_no')
@@ -16,6 +17,7 @@ class PaymentVoucherSerializer(serializers.ModelSerializer):
     # Custom method to include related receipts
     schoolFundReceipt = serializers.SerializerMethodField()
     rmiReceipt = serializers.SerializerMethodField()
+    tuitionReceipt = serializers.SerializerMethodField()  # Add tuition receipt field
 
     class Meta:
         model = PaymentVoucher
@@ -23,7 +25,7 @@ class PaymentVoucherSerializer(serializers.ModelSerializer):
             'id', 'account', 'voucherNo', 'payeeName', 'particulars', 
             'amountShs', 'paymentMode', 'totalAmountInWords', 'preparedBy', 
             'authorisedBy', 'voteHead', 'voteDetails', 'date', 
-            'schoolFundReceipt', 'rmiReceipt'  # Include both receipt fields
+            'schoolFundReceipt', 'rmiReceipt', 'tuitionReceipt'  # Include tuition receipt field
         ]
 
     def get_schoolFundReceipt(self, obj):
@@ -40,6 +42,17 @@ class PaymentVoucherSerializer(serializers.ModelSerializer):
     def get_rmiReceipt(self, obj):
         if hasattr(obj, 'rmi_receipt') and obj.rmi_receipt is not None:
             receipt = obj.rmi_receipt
+            return {
+                'id': receipt.id,
+                'received_from': receipt.received_from,
+                'date': receipt.date,
+                'total_amount': receipt.total_amount,
+            }
+        return None
+
+    def get_tuitionReceipt(self, obj):
+        if hasattr(obj, 'tuition_receipt') and obj.tuition_receipt is not None:
+            receipt = obj.tuition_receipt
             return {
                 'id': receipt.id,
                 'received_from': receipt.received_from,

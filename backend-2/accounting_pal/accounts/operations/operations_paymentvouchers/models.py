@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt
 from accounts.rmi.rmi_receipts.models import RMIReceipt
+from accounts.tuition.tuition_receipts.models import TuitionReceipt  # Import TuitionReceipt model
 from django.contrib import auth
 
 class PaymentVoucher(models.Model):
@@ -39,8 +40,16 @@ class PaymentVoucher(models.Model):
         related_name='payment_voucher'
     )
 
-    rmi_receipt = models.OneToOneField(  # Add relationship for RMI Receipt
+    rmi_receipt = models.OneToOneField(
         RMIReceipt,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='payment_voucher'
+    )
+
+    tuition_receipt = models.OneToOneField(  # Add relationship for Tuition Receipt
+        TuitionReceipt,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
