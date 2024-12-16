@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.operations.operations_receipts.models import OperationReceipt
+from accounts.rmi.rmi_receipts.models import RMIReceipt  # Import RMIReceipt
+from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt  # Import SchoolFundReceipt
 
 class TuitionPaymentVoucher(models.Model):
     PAYMENT_MODE_CHOICES = [
@@ -10,7 +12,7 @@ class TuitionPaymentVoucher(models.Model):
     VOTE_HEAD_CHOICES = [
         ('school_fund', 'School fund'),
         ('operations', 'Operations'),
-        ('tuition', 'Tuition'),
+        ('rmi', 'rmi'),
         ('other_voteheads', 'Other Voteheads'),
     ]
 
@@ -37,6 +39,24 @@ class TuitionPaymentVoucher(models.Model):
         null=True,
         blank=True,
         related_name='tuition_payment_voucher'  # Updated related name
+    )
+
+    # One-to-One relationship with RMIReceipt
+    rmi_receipt = models.OneToOneField(
+        RMIReceipt,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tuition_payment_voucher'
+    )
+
+    # One-to-One relationship with SchoolFundReceipt
+    school_fund_receipt = models.OneToOneField(
+        SchoolFundReceipt,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tuition_payment_voucher'
     )
 
     def __str__(self):
