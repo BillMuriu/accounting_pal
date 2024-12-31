@@ -1,7 +1,7 @@
-from rest_framework import generics
-from .models import TuitionPaymentVoucher
-from .serializers import TuitionPaymentVoucherSerializer
-from accounts.operations.operations_receipts.serializers import OperationReceiptSerializer
+
+# The Create And Update view for this file has an issue
+
+
 
 from rest_framework import generics
 from .models import TuitionPaymentVoucher
@@ -18,29 +18,36 @@ class ListCreateTuitionPaymentVoucherView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         # Save the TuitionPaymentVoucher instance
         tuition_payment_voucher = serializer.save()
+        print(f"TuitionPaymentVoucher saved: {tuition_payment_voucher}")
 
         # If the vote head is 'operations', create a corresponding OperationReceipt
         if tuition_payment_voucher.vote_head == 'operations':
             receipt_data = {
                 'account': 'operations_account',
-                'received_from': tuition_payment_voucher.account,
-                'cash_bank': tuition_payment_voucher.payment_mode,
-                'total_amount': tuition_payment_voucher.amount_shs,
+                'receivedFrom': tuition_payment_voucher.account,  # Updated field name
+                'cashBank': tuition_payment_voucher.payment_mode,  # Updated field name
+                'totalAmount': tuition_payment_voucher.amount_shs,  # Updated field name
                 'date': tuition_payment_voucher.date,
+                'rmiFund': None,  # Add this if it's required by the serializer
+                'otherVoteheads': None,  # Add this if it's required by the serializer
             }
+            print(f"Creating OperationReceipt with data: {receipt_data}")
             receipt_serializer = OperationReceiptSerializer(data=receipt_data)
             if receipt_serializer.is_valid():
                 receipt = receipt_serializer.save()
+                print(f"OperationReceipt created: {receipt}")
                 tuition_payment_voucher.operation_receipt = receipt
                 tuition_payment_voucher.save()
+            else:
+                print(f"OperationReceipt serializer errors: {receipt_serializer.errors}")
 
         # If the vote head is 'school_fund', create a corresponding SchoolFundReceipt
         elif tuition_payment_voucher.vote_head == 'school_fund':
             receipt_data = {
                 'account': 'school_fund_account',
-                'received_from': tuition_payment_voucher.account,
-                'cash_bank': tuition_payment_voucher.payment_mode,
-                'total_amount': tuition_payment_voucher.amount_shs,
+                'receivedFrom': tuition_payment_voucher.account,  # Updated field name
+                'cashBank': tuition_payment_voucher.payment_mode,  # Updated field name
+                'totalAmount': tuition_payment_voucher.amount_shs,  # Updated field name
                 'date': tuition_payment_voucher.date,
             }
             receipt_serializer = SchoolFundReceiptSerializer(data=receipt_data)
@@ -53,9 +60,9 @@ class ListCreateTuitionPaymentVoucherView(generics.ListCreateAPIView):
         elif tuition_payment_voucher.vote_head == 'rmi':
             receipt_data = {
                 'account': 'rmi_account',
-                'received_from': tuition_payment_voucher.account,
-                'cash_bank': tuition_payment_voucher.payment_mode,
-                'total_amount': tuition_payment_voucher.amount_shs,
+                'receivedFrom': tuition_payment_voucher.account,  # Updated field name
+                'cashBank': tuition_payment_voucher.payment_mode,  # Updated field name
+                'totalAmount': tuition_payment_voucher.amount_shs,  # Updated field name
                 'date': tuition_payment_voucher.date,
             }
             receipt_serializer = RMIReceiptSerializer(data=receipt_data)
@@ -76,9 +83,9 @@ class TuitionPaymentVoucherRetrieveUpdateDestroyView(generics.RetrieveUpdateDest
         if tuition_payment_voucher.vote_head == 'operations' and tuition_payment_voucher.operation_receipt:
             receipt_data = {
                 'account': 'operations_account',
-                'received_from': tuition_payment_voucher.account,
-                'cash_bank': tuition_payment_voucher.payment_mode,
-                'total_amount': tuition_payment_voucher.amount_shs,
+                'receivedFrom': tuition_payment_voucher.account,  # Updated field name
+                'cashBank': tuition_payment_voucher.payment_mode,  # Updated field name
+                'totalAmount': tuition_payment_voucher.amount_shs,  # Updated field name
                 'date': tuition_payment_voucher.date,
             }
             receipt_serializer = OperationReceiptSerializer(
@@ -91,9 +98,9 @@ class TuitionPaymentVoucherRetrieveUpdateDestroyView(generics.RetrieveUpdateDest
         elif tuition_payment_voucher.vote_head == 'school_fund' and tuition_payment_voucher.school_fund_receipt:
             receipt_data = {
                 'account': 'school_fund_account',
-                'received_from': tuition_payment_voucher.account,
-                'cash_bank': tuition_payment_voucher.payment_mode,
-                'total_amount': tuition_payment_voucher.amount_shs,
+                'receivedFrom': tuition_payment_voucher.account,  # Updated field name
+                'cashBank': tuition_payment_voucher.payment_mode,  # Updated field name
+                'totalAmount': tuition_payment_voucher.amount_shs,  # Updated field name
                 'date': tuition_payment_voucher.date,
             }
             receipt_serializer = SchoolFundReceiptSerializer(
@@ -106,9 +113,9 @@ class TuitionPaymentVoucherRetrieveUpdateDestroyView(generics.RetrieveUpdateDest
         elif tuition_payment_voucher.vote_head == 'rmi' and tuition_payment_voucher.rmi_receipt:
             receipt_data = {
                 'account': 'rmi_account',
-                'received_from': tuition_payment_voucher.account,
-                'cash_bank': tuition_payment_voucher.payment_mode,
-                'total_amount': tuition_payment_voucher.amount_shs,
+                'receivedFrom': tuition_payment_voucher.account,  # Updated field name
+                'cashBank': tuition_payment_voucher.payment_mode,  # Updated field name
+                'totalAmount': tuition_payment_voucher.amount_shs,  # Updated field name
                 'date': tuition_payment_voucher.date,
             }
             receipt_serializer = RMIReceiptSerializer(

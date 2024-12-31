@@ -1,0 +1,52 @@
+[
+  {
+    "student": 3,
+    "balance": 4500,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 4,
+    "balance": 4700,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 5,
+    "balance": 4900,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 6,
+    "balance": 5100,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 7,
+    "balance": 5300,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 8,
+    "balance": 5500,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 9,
+    "balance": 5700,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 10,
+    "balance": 5900,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 11,
+    "balance": 6100,
+    "date_recorded": "2024-01-01"
+  },
+  {
+    "student": 12,
+    "balance": 6300,
+    "date_recorded": "2024-01-01"
+  }
+]

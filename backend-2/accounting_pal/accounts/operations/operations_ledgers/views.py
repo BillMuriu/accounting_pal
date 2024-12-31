@@ -141,3 +141,40 @@ class OtherVoteheadsLedgerView(APIView):
         ledger = get_other_voteheads_ledger(start_date, end_date)
 
         return Response({"ledger": ledger}, status=status.HTTP_200_OK)
+
+
+class CombinedLedgerView(APIView):
+    def get(self, request):
+        # Extract start_date and end_date from query parameters
+        start_date_str = request.query_params.get('start_date')
+        end_date_str = request.query_params.get('end_date')
+
+        # Ensure both start_date and end_date are provided
+        if not start_date_str or not end_date_str:
+            return Response({"error": "start_date and end_date are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convert strings to datetime objects
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+        except ValueError:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the individual ledgers
+        rmi_ledger = get_rmi_ledger(start_date, end_date)
+        bankcharge_ledger = get_bankcharge_ledger(start_date, end_date)
+        school_fund_ledger = get_school_fund_ledger(start_date, end_date)
+        tuition_ledger = get_tuition_ledger(start_date, end_date)
+        other_voteheads_ledger = get_other_voteheads_ledger(start_date, end_date)
+
+        # Combine all ledgers
+        combined_ledger = {
+            "rmi_ledger": rmi_ledger,
+            "bankcharge_ledger": bankcharge_ledger,
+            "school_fund_ledger": school_fund_ledger,
+            "tuition_ledger": tuition_ledger,
+            "other_voteheads_ledger": other_voteheads_ledger
+        }
+
+        # Return the combined ledger in the response
+        return Response({"combined_ledger": combined_ledger}, status=status.HTTP_200_OK)

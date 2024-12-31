@@ -82,8 +82,8 @@ def get_receipts_money_in(year, month):
     balance_forward = {
         'from_whom': 'Balance Carried Forward',
         'receipt_no': '-',
-        'cash': f"{balance_info['cashAmount']:,}",
-        'bank': f"{balance_info['bankAmount']:,}",
+        'cash': f"{balance_info['cashAmount']:,}" if balance_info['cashAmount'] is not None else '-',
+        'bank': f"{balance_info['bankAmount']:,}" if balance_info['bankAmount'] is not None else '-',
         'rmi': '-',
         'other_voteheads': '-',
     }
@@ -102,14 +102,16 @@ def get_receipts_money_in(year, month):
     )
 
     for entry in petty_cash_entries:
-        total_cash_received += entry['total_amount']
+        total_amount = entry['total_amount'] or 0
+        total_cash_received += total_amount
         receipts_data.append({
             'from_whom': 'Petty Cash',
             'receipt_no': '-',
-            'cash': f"{entry['total_amount']:,}",
+            'cash': f"{total_amount:,}",
             'bank': '-',
             'rmi': '-',
             'other_voteheads': '-',
+            'date': start_date  # Add a default date if none is available
         })
 
     # Operation Receipts (non-petty cash)
@@ -119,22 +121,28 @@ def get_receipts_money_in(year, month):
         date__gte=start_date,
         date__lt=end_date
     ).values(
-        'received_from', 'cash_bank', 'total_amount', 'rmi_fund', 'other_voteheads'
+        'received_from', 'cash_bank', 'total_amount', 'rmi_fund', 'other_voteheads', 'date'
     )
 
     for receipt in operation_receipts:
+        total_amount = receipt['total_amount'] or 0
+        rmi_fund = receipt['rmi_fund'] or 0
+        other_voteheads = receipt['other_voteheads'] or 0
+        receipt_date = receipt.get('date', start_date)  # Default to start_date if no date is provided
+
         if receipt['cash_bank'] == 'cash':
-            total_cash_received += receipt['total_amount']
+            total_cash_received += total_amount
         elif receipt['cash_bank'] == 'bank':
-            total_bank_received += receipt['total_amount']
+            total_bank_received += total_amount
 
         receipts_data.append({
             'from_whom': receipt['received_from'],
             'receipt_no': '-',
-            'cash': f"{receipt['total_amount']:,}" if receipt['cash_bank'] == 'cash' else '-',
-            'bank': f"{receipt['total_amount']:,}" if receipt['cash_bank'] == 'bank' else '-',
-            'rmi': f"{receipt['rmi_fund']:,}" if receipt['rmi_fund'] > 0 else '-',
-            'other_voteheads': f"{receipt['other_voteheads']:,}" if receipt['other_voteheads'] > 0 else '-',
+            'cash': f"{total_amount:,}" if receipt['cash_bank'] == 'cash' else '-',
+            'bank': f"{total_amount:,}" if receipt['cash_bank'] == 'bank' else '-',
+            'rmi': f"{rmi_fund:,}" if rmi_fund > 0 else '-',
+            'other_voteheads': f"{other_voteheads:,}" if other_voteheads > 0 else '-',
+            'date': receipt_date  # Ensure the date is added
         })
 
     total_receipts = {
@@ -143,6 +151,8 @@ def get_receipts_money_in(year, month):
     }
 
     return {"receipts": receipts_data, "total_receipts": total_receipts}
+
+
 
 
 def get_cashbook(year, month):

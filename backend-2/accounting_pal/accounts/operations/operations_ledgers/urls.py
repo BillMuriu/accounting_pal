@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RMILedgerView, BankChargeLedgerView, SchoolFundLedgerView, TuitionLedgerView, OtherVoteheadsLedgerView
+from .views import RMILedgerView, BankChargeLedgerView, SchoolFundLedgerView, TuitionLedgerView, OtherVoteheadsLedgerView, CombinedLedgerView
 
 urlpatterns = [
     path('rmi-ledger/', RMILedgerView.as_view(), name='rmi-ledger'),
@@ -7,4 +7,5 @@ urlpatterns = [
     path('school-fund-ledger/', SchoolFundLedgerView.as_view(), name='school-fund-ledger'),
     path('tuition-ledger/', TuitionLedgerView.as_view(), name='tuition-ledger'),
     path('other-voteheads-ledger/', OtherVoteheadsLedgerView.as_view(), name='other-voteheads-ledger'),
+    path('combined-ledger/', CombinedLedgerView.as_view(), name='combined-ledger'),
 ]

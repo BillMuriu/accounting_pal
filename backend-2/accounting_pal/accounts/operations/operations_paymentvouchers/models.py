@@ -1,8 +1,7 @@
 from django.db import models
 from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt
 from accounts.rmi.rmi_receipts.models import RMIReceipt
-from accounts.tuition.tuition_receipts.models import TuitionReceipt  # Import TuitionReceipt model
-from django.contrib import auth
+from accounts.tuition.tuition_receipts.models import TuitionReceipt
 
 class PaymentVoucher(models.Model):
     PAYMENT_MODE_CHOICES = [
@@ -24,6 +23,7 @@ class PaymentVoucher(models.Model):
     particulars = models.TextField()
     amount_shs = models.DecimalField(max_digits=10, decimal_places=2)
     payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
+    cheque_number = models.CharField(max_length=100, null=True, blank=True)  # Non-mandatory field
     total_amount_in_words = models.CharField(max_length=255)
     prepared_by = models.CharField(max_length=255)
     authorised_by = models.CharField(max_length=255)
@@ -34,8 +34,8 @@ class PaymentVoucher(models.Model):
     # Relationships to Receipts
     school_fund_receipt = models.OneToOneField(
         SchoolFundReceipt,
-        on_delete=models.SET_NULL, 
-        null=True, 
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
         related_name='payment_voucher'
     )
@@ -48,7 +48,7 @@ class PaymentVoucher(models.Model):
         related_name='payment_voucher'
     )
 
-    tuition_receipt = models.OneToOneField(  # Add relationship for Tuition Receipt
+    tuition_receipt = models.OneToOneField(
         TuitionReceipt,
         on_delete=models.SET_NULL,
         null=True,

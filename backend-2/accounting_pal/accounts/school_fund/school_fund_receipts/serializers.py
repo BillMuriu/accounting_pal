@@ -10,5 +10,7 @@ class SchoolFundReceiptSerializer(serializers.ModelSerializer):
         model = SchoolFundReceipt
         fields = [
             'id', 'account', 'received_from', 'student', 
-            'cash_bank', 'total_amount', 'date', 'paymentVoucher'
+            'cash_bank', 'total_amount', 'date', 
+            'receipt_number',  # Added receipt_number field
+            'paymentVoucher'
         ]
