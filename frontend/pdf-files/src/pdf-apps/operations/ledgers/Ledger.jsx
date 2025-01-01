@@ -3,6 +3,8 @@ import LedgerForm from "./components/LedgerForm";
 import { rmiLedgerColumns } from "./components/ledger-columns";
 import { LedgerDataTable } from "@/components/tables/ledge-table";
 import { format } from "date-fns";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import LedgerPDF from "./components/ledger-pdf";
 
 const Ledger = () => {
   const [loading, setLoading] = useState(false);
@@ -84,6 +86,27 @@ const Ledger = () => {
               console.log(`${ledgerTitles[ledgerKey]} selection`, newSelection)
             }
           />
+
+          {/* Add Download PDF Button */}
+          <div className="mt-4">
+            <PDFDownloadLink
+              document={
+                <LedgerPDF
+                  month={"01"} // Example month
+                  year={"2025"} // Example year
+                  ledgerData={ledgerData} // Pass the ledger data
+                />
+              }
+              fileName={`${ledgerKey}_ledger_${format(
+                new Date(),
+                "MM_dd_yyyy"
+              )}.pdf`}
+            >
+              {({ loading }) =>
+                loading ? "Preparing document..." : "Download PDF"
+              }
+            </PDFDownloadLink>
+          </div>
         </div>
       ))}
     </div>
