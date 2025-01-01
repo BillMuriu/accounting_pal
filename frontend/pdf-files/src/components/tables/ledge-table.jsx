@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-export function ReceiptsDataTable({ columns, data, onSelectionChange }) {
+export function LedgerDataTable({ columns, data, onSelectionChange }) {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
@@ -95,7 +95,7 @@ export function ReceiptsDataTable({ columns, data, onSelectionChange }) {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   const isLeftAligned =
-                    header.column.columnDef.header === "Received From";
+                    header.column.columnDef.header === "Description";
                   return (
                     <TableHead
                       key={header.id}
@@ -122,7 +122,7 @@ export function ReceiptsDataTable({ columns, data, onSelectionChange }) {
                 >
                   {row.getVisibleCells().map((cell) => {
                     const isLeftAligned =
-                      cell.column.columnDef.header === "Received From";
+                      cell.column.columnDef.header === "Description";
                     return (
                       <TableCell
                         key={cell.id}

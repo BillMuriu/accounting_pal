@@ -21,8 +21,8 @@ import { Button } from "@/components/ui/button";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import CashbookPDF from "./components/CashbookPDF";
 import { ReceiptsDataTable } from "@/components/tables/receipts-table";
-import { receiptsColumns } from "@/components/columns/cashbook-columns/receipt-columns";
-import { paymentsColumns } from "@/components/columns/cashbook-columns/payment-columns";
+import { receiptsColumns } from "./components/cashbook-columns/receipt-columns";
+import { paymentsColumns } from "./components/cashbook-columns/payment-columns";
 
 // Schema for validation
 const formSchema = z.object({
