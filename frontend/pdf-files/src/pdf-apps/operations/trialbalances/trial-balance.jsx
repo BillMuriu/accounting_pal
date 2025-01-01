@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import TrialBalanceForm from "./components/trial-balance-form";
 import { format } from "date-fns";
+import { trialBalanceColumns } from "./components/trial-balance-columns";
+import { TrialBalanceDataTable } from "@/components/tables/trial-balance-table";
 
 const fetchTrialBalance = async (startDate, endDate) => {
   const response = await fetch(
@@ -46,28 +48,51 @@ const TrialBalance = () => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  // Transform data to match the table format
+  const transformData = (data) => {
+    const debitsData = Object.entries(data.debits).map(([key, value]) => ({
+      description: key,
+      debits: value,
+      credits: data.credits[key]?.amount || 0,
+    }));
+
+    const creditsData = Object.entries(data.credits).map(([key, value]) => ({
+      description: key,
+      debits: data.debits[key]?.amount || 0,
+      credits: value.amount,
+    }));
+
+    return [...debitsData, ...creditsData];
+  };
+
+  const transformedData = data ? transformData(data) : [];
+
   return (
-    <div className="container">
-      <TrialBalanceForm onSubmit={handleFormSubmit} loading={isLoading} />
-      {data && (
-        <div className="trial-balance">
-          <h2>Trial Balance</h2>
-          <div className="balance">
-            <div>
-              <h3>Debits</h3>
-              <pre>{JSON.stringify(data.debits, null, 2)}</pre>
-            </div>
-            <div>
-              <h3>Credits</h3>
-              <pre>{JSON.stringify(data.credits, null, 2)}</pre>
-            </div>
-            <div>
-              <h3>Total Debits: {data.total_debits.toLocaleString()}</h3>
-              <h3>Total Credits: {data.total_credits.toLocaleString()}</h3>
+    <div className="flex items-center justify-center min-h-screen py-10 bg-gray-50">
+      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
+        <TrialBalanceForm onSubmit={handleFormSubmit} loading={isLoading} />
+        {data && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-center mb-6">
+              Trial Balance
+            </h2>
+            <div className="balance">
+              <TrialBalanceDataTable
+                data={transformedData}
+                columns={trialBalanceColumns} // Use the columns defined elsewhere
+              />
+              <div className="mt-6 text-center">
+                <h3 className="text-lg font-semibold">
+                  Total Debits: {data.total_debits.toLocaleString()}
+                </h3>
+                <h3 className="text-lg font-semibold">
+                  Total Credits: {data.total_credits.toLocaleString()}
+                </h3>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
