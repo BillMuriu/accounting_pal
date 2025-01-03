@@ -8,6 +8,12 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Form,
   FormControl,
   FormField,
@@ -36,7 +42,7 @@ const TrialBalanceForm = ({ onSubmit, loading }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-md w-full flex flex-col lg:flex-row lg:gap-6 gap-4"
+        className="w-full max-w-md flex flex-col gap-4 lg:flex-row lg:gap-6 lg:justify-between lg:items-end"
       >
         {/* Start Date */}
         <FormField
@@ -121,3 +127,12 @@ const TrialBalanceForm = ({ onSubmit, loading }) => {
 };
 
 export default TrialBalanceForm;
+
+<Accordion type="single" collapsible>
+  <AccordionItem value="item-1">
+    <AccordionTrigger>Is it accessible?</AccordionTrigger>
+    <AccordionContent>
+      Yes. It adheres to the WAI-ARIA design pattern.
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>;

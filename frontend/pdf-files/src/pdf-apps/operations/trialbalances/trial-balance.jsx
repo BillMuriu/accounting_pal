@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Download } from "lucide-react";
 import TrialBalanceForm from "./components/trial-balance-form";
 import { format } from "date-fns";
 import { trialBalanceColumns } from "./components/trial-balance-columns";
@@ -125,60 +126,13 @@ const TrialBalance = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-screen max-w-4xl bg-white p-6 rounded-lg shadow-lg">
+    <div className="flex lg:w-screen sm:w-full items-center justify-center flex-col h-full p-4">
       <TrialBalanceForm onSubmit={handleFormSubmit} loading={isLoading} />
       {data && (
-        <div className="w-full mt-8">
-          <h2 className="text-2xl font-bold text-center mb-6">Trial Balance</h2>
-          <div className="space-y-8">
-            <section>
-              <h3 className="text-xl font-semibold mb-4 bg-blue-50 p-2 rounded-md">
-                Opening Balances
-              </h3>
-              <TrialBalanceDataTable
-                data={transformedData.openingBalances}
-                columns={trialBalanceColumns}
-              />
-            </section>
-            <section>
-              <h3 className="text-xl font-semibold mb-4 bg-gray-50 p-2 rounded-md">
-                Closing Balances
-              </h3>
-              <TrialBalanceDataTable
-                data={transformedData.closingBalances}
-                columns={trialBalanceColumns}
-              />
-            </section>
-            <section>
-              <h3 className="text-xl font-semibold mb-4 bg-white p-2 rounded-md">
-                Other Accounts
-              </h3>
-              <TrialBalanceDataTable
-                data={transformedData.others}
-                columns={trialBalanceColumns}
-              />
-            </section>
-          </div>
-
-          {/* Totals Table */}
-          <section>
-            <h3 className="text-xl font-semibold mb-4 bg-green-50 p-2 rounded-md">
-              Totals
-            </h3>
-            <TrialBalanceDataTable
-              data={[
-                {
-                  description: "Total",
-                  debits: transformedData.totalDebits,
-                  credits: transformedData.totalCredits,
-                },
-              ]}
-              columns={trialBalanceColumns}
-            />
-          </section>
-
-          {/* PDF Download Link */}
-          <section className="mt-6">
+        <div className="w-full sm:w-[800px] mt-8 bg-white shadow-lg rounded-lg p-6 relative">
+          {/* Header with title and PDF download link */}
+          <div className="relative mb-6">
+            <h2 className="text-2xl font-bold text-center">Trial Balance</h2>
             {transformedData &&
             transformedData.openingBalances.length > 0 &&
             transformedData.closingBalances.length > 0 &&
@@ -192,16 +146,69 @@ const TrialBalance = () => {
                   />
                 }
                 fileName={`Operations_Trial_Balance_${startDate}_${endDate}.pdf`}
+                className="absolute top-0 right-0 flex items-center gap-1 text-sm font-medium text-blue-500 hover:underline"
               >
                 {({ loading }) =>
-                  loading
-                    ? "Preparing document..."
-                    : "Download Trial Balance PDF"
+                  loading ? (
+                    "Preparing..."
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      Download
+                    </>
+                  )
                 }
               </PDFDownloadLink>
             ) : (
-              <p>Loading transformed data...</p>
+              <p className="absolute top-0 right-0">Loading...</p>
             )}
+          </div>
+
+          <div className="space-y-8">
+            <section>
+              <h3 className="text-md font-semibold mt-4 mb-1 bg-white p-2 rounded-md">
+                Opening Balances
+              </h3>
+              <TrialBalanceDataTable
+                data={transformedData.openingBalances}
+                columns={trialBalanceColumns}
+              />
+            </section>
+            <section>
+              <h3 className="text-md font-semibold mt-4 mb-1 bg-white p-2 rounded-md">
+                Main Accounts
+              </h3>
+              <TrialBalanceDataTable
+                data={transformedData.others}
+                columns={trialBalanceColumns}
+              />
+            </section>
+            <section>
+              <h3 className="text-md font-semibold mt-4 mb-1 bg-white p-2 rounded-md">
+                Closing Balances
+              </h3>
+              <TrialBalanceDataTable
+                data={transformedData.closingBalances}
+                columns={trialBalanceColumns}
+              />
+            </section>
+          </div>
+
+          {/* Totals Table */}
+          <section>
+            <h3 className="text-md font-semibold mt-4 mb-1 bg-gray-50 p-2 rounded-md">
+              Totals
+            </h3>
+            <TrialBalanceDataTable
+              data={[
+                {
+                  description: "Total",
+                  debits: transformedData.totalDebits,
+                  credits: transformedData.totalCredits,
+                },
+              ]}
+              columns={trialBalanceColumns}
+            />
           </section>
         </div>
       )}
