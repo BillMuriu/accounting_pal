@@ -4,12 +4,8 @@ import { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
-import { EyeOpenIcon } from "@radix-ui/react-icons";
 
 import {
   Table,
@@ -19,36 +15,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 
 export function ReceiptsDataTable({ columns, data, onSelectionChange }) {
   const [sorting, setSorting] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     initialState: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 10,
-      },
       rowSelection: {},
     },
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: (updater) => {
       const newSelection = updater(rowSelection);
       setRowSelection(newSelection);
@@ -56,38 +37,12 @@ export function ReceiptsDataTable({ columns, data, onSelectionChange }) {
     },
     state: {
       sorting,
-      columnVisibility,
       rowSelection,
     },
   });
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <EyeOpenIcon className="mr-2 h-4 w-4" />
-              View
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
       <ScrollArea className="min-w-96 whitespace-nowrap rounded-md border">
         <Table>
           <TableHeader>
@@ -151,28 +106,6 @@ export function ReceiptsDataTable({ columns, data, onSelectionChange }) {
         </Table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-        <span className="text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-      </div>
     </div>
   );
 }

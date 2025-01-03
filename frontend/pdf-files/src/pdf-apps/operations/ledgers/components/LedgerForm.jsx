@@ -36,7 +36,7 @@ const LedgerForm = ({ onSubmit, loading }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-md w-full flex flex-col lg:flex-row lg:gap-6 gap-4"
+        className="w-full max-w-md flex flex-col gap-4 lg:flex-row lg:gap-6 lg:justify-between lg:items-end"
       >
         {/* Start Date */}
         <FormField

@@ -1,6 +1,7 @@
 import React from "react";
 import { HashRouter as Router, Route, Routes, Link } from "react-router-dom";
-import Pdf from "./pdf-apps/operations/cashbooks/Pdf";
+// import Pdf from "./pdf-apps/operations/cashbooks/Pdf";
+import CashBook from "./pdf-apps/operations/cashbooks/Cash-book";
 import Ledger from "./pdf-apps/operations/ledgers/Ledger";
 import TrialBalance from "./pdf-apps/operations/trialbalances/trial-balance";
 import Home from "./Home";
@@ -32,7 +33,7 @@ const App = () => {
         {/* Main Content */}
         <div className="flex-grow bg-gray-50 p-4">
           <Routes>
-            <Route path="/operations-cashbook-pdfs" element={<Pdf />} />
+            <Route path="/operations-cashbook-pdfs" element={<CashBook />} />
             <Route path="/home" element={<Home />} />
             <Route path="/operations-ledger" element={<Ledger />} />
             <Route
