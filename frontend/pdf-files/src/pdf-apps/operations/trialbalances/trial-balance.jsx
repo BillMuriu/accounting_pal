@@ -4,14 +4,18 @@ import { format } from "date-fns";
 import { trialBalanceColumns } from "./components/trial-balance-columns";
 import { TrialBalanceDataTable } from "@/components/tables/trial-balance-table";
 
+// Fetch function to get trial balance data from the backend
 const fetchTrialBalance = async (startDate, endDate) => {
+  console.log("Fetching trial balance data for:", { startDate, endDate });
   const response = await fetch(
     `http://127.0.0.1:8000/api/operations-trialbalances/trial-balance/?start_date=${startDate}&end_date=${endDate}`
   );
   if (!response.ok) {
     throw new Error("Error fetching trial balance data");
   }
-  return await response.json();
+  const data = await response.json();
+  console.log("Fetched trial balance data:", data);
+  return data;
 };
 
 const TrialBalance = () => {
@@ -21,11 +25,13 @@ const TrialBalance = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Handle form submission
   const handleFormSubmit = (formData) => {
     setStartDate(format(formData.start_date, "yyyy-MM-dd"));
     setEndDate(format(formData.end_date, "yyyy-MM-dd"));
   };
 
+  // Fetch data when startDate or endDate changes
   useEffect(() => {
     if (startDate && endDate) {
       const fetchData = async () => {
@@ -33,8 +39,10 @@ const TrialBalance = () => {
         setError(null);
         try {
           const result = await fetchTrialBalance(startDate, endDate);
+          console.log("Received trial balance result:", result);
           setData(result);
         } catch (err) {
+          console.error("Error fetching trial balance:", err.message);
           setError(err.message);
         } finally {
           setIsLoading(false);
@@ -45,54 +53,111 @@ const TrialBalance = () => {
     }
   }, [startDate, endDate]);
 
+  // Transform data to match the table format
+  const transformData = (data) => {
+    const openingBalances = [];
+    const closingBalances = [];
+    const others = [];
+
+    console.log("Transforming data:", data);
+
+    // Combine all accounts from both debits and credits
+    const allAccounts = new Set([
+      ...Object.keys(data.debits),
+      ...Object.keys(data.credits),
+    ]);
+
+    allAccounts.forEach((account) => {
+      const debits =
+        typeof data.debits[account] === "object"
+          ? data.debits[account]?.amount || 0
+          : data.debits[account] || 0;
+      const credits =
+        typeof data.credits[account] === "object"
+          ? data.credits[account]?.amount || 0
+          : data.credits[account] || 0;
+
+      console.log(`Processing account: ${account}`, { debits, credits });
+
+      const row = {
+        description: account,
+        debits,
+        credits,
+      };
+
+      if (account.toLowerCase().includes("opening")) {
+        console.log("Adding to opening balances:", row);
+        openingBalances.push(row);
+      } else if (account.toLowerCase().includes("closing")) {
+        console.log("Adding to closing balances:", row);
+        closingBalances.push(row);
+      } else {
+        others.push(row);
+      }
+    });
+
+    console.log("Transformed data:", {
+      openingBalances,
+      closingBalances,
+      others,
+    });
+
+    return { openingBalances, closingBalances, others };
+  };
+
+  const transformedData = data
+    ? transformData(data)
+    : { openingBalances: [], closingBalances: [], others: [] };
+
+  // Show loading or error state
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  // Transform data to match the table format
-  const transformData = (data) => {
-    const debitsData = Object.entries(data.debits).map(([key, value]) => ({
-      description: key,
-      debits: value,
-      credits: data.credits[key]?.amount || 0,
-    }));
-
-    const creditsData = Object.entries(data.credits).map(([key, value]) => ({
-      description: key,
-      debits: data.debits[key]?.amount || 0,
-      credits: value.amount,
-    }));
-
-    return [...debitsData, ...creditsData];
-  };
-
-  const transformedData = data ? transformData(data) : [];
-
   return (
-    <div className="flex items-center justify-center min-h-screen py-10 bg-gray-50">
-      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
-        <TrialBalanceForm onSubmit={handleFormSubmit} loading={isLoading} />
-        {data && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold text-center mb-6">
-              Trial Balance
-            </h2>
-            <div className="balance">
+    <div className="w-screen max-w-4xl bg-white p-6 rounded-lg shadow-lg">
+      <TrialBalanceForm onSubmit={handleFormSubmit} loading={isLoading} />
+      {data && (
+        <div className="w-full mt-8">
+          <h2 className="text-2xl font-bold text-center mb-6">Trial Balance</h2>
+          <div className="space-y-8">
+            <section>
+              <h3 className="text-xl font-semibold mb-4 bg-blue-50 p-2 rounded-md">
+                Opening Balances
+              </h3>
               <TrialBalanceDataTable
-                data={transformedData}
-                columns={trialBalanceColumns} // Use the columns defined elsewhere
+                data={transformedData.openingBalances}
+                columns={trialBalanceColumns}
               />
-              <div className="mt-6 text-center">
-                <h3 className="text-lg font-semibold">
-                  Total Debits: {data.total_debits.toLocaleString()}
-                </h3>
-                <h3 className="text-lg font-semibold">
-                  Total Credits: {data.total_credits.toLocaleString()}
-                </h3>
-              </div>
-            </div>
+            </section>
+            <section>
+              <h3 className="text-xl font-semibold mb-4 bg-gray-50 p-2 rounded-md">
+                Closing Balances
+              </h3>
+              <TrialBalanceDataTable
+                data={transformedData.closingBalances}
+                columns={trialBalanceColumns}
+              />
+            </section>
+            <section>
+              <h3 className="text-xl font-semibold mb-4 bg-white p-2 rounded-md">
+                Other Accounts
+              </h3>
+              <TrialBalanceDataTable
+                data={transformedData.others}
+                columns={trialBalanceColumns}
+              />
+            </section>
           </div>
-        )}
-      </div>
+          <div className="mt-6 text-center">
+            <h3 className="text-lg font-semibold">
+              Total Debits: {data.total_debits.toLocaleString()}
+            </h3>
+            <h3 className="text-lg font-semibold">
+              Total Credits: {data.total_credits.toLocaleString()}
+            </h3>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
