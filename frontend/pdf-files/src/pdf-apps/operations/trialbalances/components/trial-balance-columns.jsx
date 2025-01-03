@@ -17,8 +17,14 @@ export const trialBalanceColumns = [
     header: "Debits",
     cell: ({ getValue }) => {
       const value = parseFloat(getValue() || 0);
+      const isPositive = value > 0;
       return (
-        <span className="text-sm">
+        <span
+          className={clsx(
+            "text-sm",
+            isPositive ? "text-green-600" : "text-red-600"
+          )}
+        >
           {value !== 0 ? value.toLocaleString("en-KE") : "-"}
         </span>
       );
@@ -30,8 +36,14 @@ export const trialBalanceColumns = [
     header: "Credits",
     cell: ({ getValue }) => {
       const value = parseFloat(getValue() || 0);
+      const isPositive = value > 0;
       return (
-        <span className="text-sm">
+        <span
+          className={clsx(
+            "text-sm",
+            isPositive ? "text-blue-600" : "text-gray-600"
+          )}
+        >
           {value !== 0 ? value.toLocaleString("en-KE") : "-"}
         </span>
       );

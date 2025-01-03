@@ -3,10 +3,12 @@ import TrialBalanceForm from "./components/trial-balance-form";
 import { format } from "date-fns";
 import { trialBalanceColumns } from "./components/trial-balance-columns";
 import { TrialBalanceDataTable } from "@/components/tables/trial-balance-table";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import TrialBalancePDF from "./components/trial-balance-pdf";
+import clsx from "clsx";
 
 // Fetch function to get trial balance data from the backend
 const fetchTrialBalance = async (startDate, endDate) => {
-  console.log("Fetching trial balance data for:", { startDate, endDate });
   const response = await fetch(
     `http://127.0.0.1:8000/api/operations-trialbalances/trial-balance/?start_date=${startDate}&end_date=${endDate}`
   );
@@ -14,7 +16,6 @@ const fetchTrialBalance = async (startDate, endDate) => {
     throw new Error("Error fetching trial balance data");
   }
   const data = await response.json();
-  console.log("Fetched trial balance data:", data);
   return data;
 };
 
@@ -25,13 +26,11 @@ const TrialBalance = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Handle form submission
   const handleFormSubmit = (formData) => {
     setStartDate(format(formData.start_date, "yyyy-MM-dd"));
     setEndDate(format(formData.end_date, "yyyy-MM-dd"));
   };
 
-  // Fetch data when startDate or endDate changes
   useEffect(() => {
     if (startDate && endDate) {
       const fetchData = async () => {
@@ -39,10 +38,8 @@ const TrialBalance = () => {
         setError(null);
         try {
           const result = await fetchTrialBalance(startDate, endDate);
-          console.log("Received trial balance result:", result);
           setData(result);
         } catch (err) {
-          console.error("Error fetching trial balance:", err.message);
           setError(err.message);
         } finally {
           setIsLoading(false);
@@ -53,7 +50,6 @@ const TrialBalance = () => {
     }
   }, [startDate, endDate]);
 
-  // Transform data to match the table format
   const transformData = (data) => {
     const openingBalances = [];
     const closingBalances = [];
@@ -61,15 +57,17 @@ const TrialBalance = () => {
     let totalDebits = 0;
     let totalCredits = 0;
 
-    console.log("Transforming data:", data);
-
-    // Combine all accounts from both debits and credits
+    // Get all unique accounts from both debits and credits
     const allAccounts = new Set([
       ...Object.keys(data.debits),
       ...Object.keys(data.credits),
     ]);
 
+    console.log("Data received:", data); // Log the entire data to check its structure
+
+    // Iterate through each account
     allAccounts.forEach((account) => {
+      // Get the debits and credits safely
       const debits =
         typeof data.debits[account] === "object"
           ? data.debits[account]?.amount || 0
@@ -79,34 +77,31 @@ const TrialBalance = () => {
           ? data.credits[account]?.amount || 0
           : data.credits[account] || 0;
 
-      console.log(`Processing account: ${account}`, { debits, credits });
-
+      // Update total debits and credits
       totalDebits += debits;
       totalCredits += credits;
 
+      // Create a row for the account
       const row = {
-        description: account,
+        description: account.trim(), // Ensure no extra spaces in account name
         debits,
         credits,
       };
 
+      // Determine where to categorize this account (opening, closing, others)
       if (account.toLowerCase().includes("opening")) {
-        console.log("Adding to opening balances:", row);
+        console.log("Opening balance found for:", account, row); // Log when an opening balance is found
         openingBalances.push(row);
       } else if (account.toLowerCase().includes("closing")) {
-        console.log("Adding to closing balances:", row);
         closingBalances.push(row);
       } else {
         others.push(row);
       }
     });
 
-    console.log("Transformed data:", {
-      openingBalances,
-      closingBalances,
-      others,
-    });
+    console.log("Opening balances:", openingBalances); // Log the openingBalances array
 
+    // Return the transformed data
     return {
       openingBalances,
       closingBalances,
@@ -126,7 +121,6 @@ const TrialBalance = () => {
         totalCredits: 0,
       };
 
-  // Show loading or error state
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -181,6 +175,33 @@ const TrialBalance = () => {
               ]}
               columns={trialBalanceColumns}
             />
+          </section>
+
+          {/* PDF Download Link */}
+          <section className="mt-6">
+            {transformedData &&
+            transformedData.openingBalances.length > 0 &&
+            transformedData.closingBalances.length > 0 &&
+            transformedData.others.length > 0 ? (
+              <PDFDownloadLink
+                document={
+                  <TrialBalancePDF
+                    startDate={startDate}
+                    endDate={endDate}
+                    transformedData={transformedData}
+                  />
+                }
+                fileName={`Operations_Trial_Balance_${startDate}_${endDate}.pdf`}
+              >
+                {({ loading }) =>
+                  loading
+                    ? "Preparing document..."
+                    : "Download Trial Balance PDF"
+                }
+              </PDFDownloadLink>
+            ) : (
+              <p>Loading transformed data...</p>
+            )}
           </section>
         </div>
       )}
