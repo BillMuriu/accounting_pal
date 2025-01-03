@@ -10,6 +10,7 @@ export const trialBalanceColumns = [
       const accountName = getValue();
       return <span className="text-sm">{accountName}</span>;
     },
+    width: "30%", // Make the account column wide enough for names
   },
   {
     accessorKey: "debits",
@@ -22,6 +23,7 @@ export const trialBalanceColumns = [
         </span>
       );
     },
+    width: "25%", // Fixed width for Debits column
   },
   {
     accessorKey: "credits",
@@ -34,5 +36,6 @@ export const trialBalanceColumns = [
         </span>
       );
     },
+    width: "25%", // Fixed width for Credits column
   },
 ];

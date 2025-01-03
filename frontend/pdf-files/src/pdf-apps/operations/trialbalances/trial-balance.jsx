@@ -58,6 +58,8 @@ const TrialBalance = () => {
     const openingBalances = [];
     const closingBalances = [];
     const others = [];
+    let totalDebits = 0;
+    let totalCredits = 0;
 
     console.log("Transforming data:", data);
 
@@ -78,6 +80,9 @@ const TrialBalance = () => {
           : data.credits[account] || 0;
 
       console.log(`Processing account: ${account}`, { debits, credits });
+
+      totalDebits += debits;
+      totalCredits += credits;
 
       const row = {
         description: account,
@@ -102,12 +107,24 @@ const TrialBalance = () => {
       others,
     });
 
-    return { openingBalances, closingBalances, others };
+    return {
+      openingBalances,
+      closingBalances,
+      others,
+      totalDebits,
+      totalCredits,
+    };
   };
 
   const transformedData = data
     ? transformData(data)
-    : { openingBalances: [], closingBalances: [], others: [] };
+    : {
+        openingBalances: [],
+        closingBalances: [],
+        others: [],
+        totalDebits: 0,
+        totalCredits: 0,
+      };
 
   // Show loading or error state
   if (isLoading) return <div>Loading...</div>;
@@ -148,14 +165,23 @@ const TrialBalance = () => {
               />
             </section>
           </div>
-          <div className="mt-6 text-center">
-            <h3 className="text-lg font-semibold">
-              Total Debits: {data.total_debits.toLocaleString()}
+
+          {/* Totals Table */}
+          <section>
+            <h3 className="text-xl font-semibold mb-4 bg-green-50 p-2 rounded-md">
+              Totals
             </h3>
-            <h3 className="text-lg font-semibold">
-              Total Credits: {data.total_credits.toLocaleString()}
-            </h3>
-          </div>
+            <TrialBalanceDataTable
+              data={[
+                {
+                  description: "Total",
+                  debits: transformedData.totalDebits,
+                  credits: transformedData.totalCredits,
+                },
+              ]}
+              columns={trialBalanceColumns}
+            />
+          </section>
         </div>
       )}
     </div>

@@ -76,7 +76,9 @@ export function TrialBalanceDataTable({ data, columns }) {
                     return (
                       <TableCell
                         key={cell.id}
-                        className={isLeftAligned ? "text-left" : "text-center"}
+                        className={`${
+                          isLeftAligned ? "text-left" : "text-center"
+                        } w-1/3`}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
