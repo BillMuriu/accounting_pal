@@ -72,7 +72,8 @@ const Ledger = () => {
   };
 
   return (
-    <div className="flex lg:w-screen sm:w-full items-center justify-center flex-col h-full p-4">
+    // <div className="flex lg:w-screen sm:w-full items-center justify-center flex-col h-full p-4">
+    <div className="flex items-center justify-center flex-col h-full w-screen">
       <LedgerForm onSubmit={onSubmit} loading={loading} />
 
       {Object.keys(ledgerData).length > 0 && (

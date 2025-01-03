@@ -126,10 +126,14 @@ const TrialBalance = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="flex lg:w-screen sm:w-full items-center justify-center flex-col h-full p-4">
+    <div className="flex items-center justify-center flex-col h-full w-full sm:w-[800px] lg:w-[900px] xl:w-[1000px] mb-10 overflow-x-hidden">
+      {" "}
+      {/* Ensure no horizontal overflow */}
       <TrialBalanceForm onSubmit={handleFormSubmit} loading={isLoading} />
       {data && (
-        <div className="w-full sm:w-[800px] mt-8 bg-white shadow-lg rounded-lg p-6 relative">
+        <div className="w-full sm:w-[800px] mt-8 bg-white shadow-lg rounded-lg p-6 relative max-w-full">
+          {" "}
+          {/* Prevent horizontal overflow */}
           {/* Header with title and PDF download link */}
           <div className="relative mb-6">
             <h2 className="text-2xl font-bold text-center">Trial Balance</h2>
@@ -163,7 +167,6 @@ const TrialBalance = () => {
               <p className="absolute top-0 right-0">Loading...</p>
             )}
           </div>
-
           <div className="space-y-8">
             <section>
               <h3 className="text-md font-semibold mt-4 mb-1 bg-white p-2 rounded-md">
@@ -193,7 +196,6 @@ const TrialBalance = () => {
               />
             </section>
           </div>
-
           {/* Totals Table */}
           <section>
             <h3 className="text-md font-semibold mt-4 mb-1 bg-gray-50 p-2 rounded-md">
