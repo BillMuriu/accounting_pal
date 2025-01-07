@@ -63,6 +63,12 @@ urlpatterns = [
     path('api/school-fund-petty-cash/', include('accounts.school_fund.school_fund_pettycash.urls')),
     path('api/school-fund-payment-vouchers/', include('accounts.school_fund.school_fund_paymentvouchers.urls')),
     path('api/school-fund-bank-charges/', include('accounts.school_fund.school_fund_bankcharge.urls')),
+    path('api/school-fund-balances/', include('accounts.school_fund.school_fund_balances.urls')),
+    #other files
+    # path('api/tuition-balances/', include('accounts.tuition.tuition_balances.urls')),
+    # path('api/tuition-cashbooks/', include('accounts.tuition.tuition_cashbooks.urls')),
+    # path('api/tuition-ledgers/', include('accounts.tuition.tuition_ledgers.urls')),
+
 
 # custom_auth
     path('api/custom_auth/', include('custom_auth.urls')),
