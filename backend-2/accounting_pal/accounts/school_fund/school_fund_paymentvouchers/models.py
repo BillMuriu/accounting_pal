@@ -29,6 +29,9 @@ class SchoolFundPaymentVoucher(models.Model):
     vote_details = models.TextField()
     date = models.DateTimeField()
 
+    # Adding cheque_number field
+    cheque_number = models.CharField(max_length=255, blank=True, null=True, help_text="Cheque number, if applicable")
+
     # One-to-One relationship with RMIPaymentVoucher
     rmi_receipt = models.OneToOneField(
         RMIReceipt,

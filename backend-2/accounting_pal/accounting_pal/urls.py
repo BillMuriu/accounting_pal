@@ -64,9 +64,8 @@ urlpatterns = [
     path('api/school-fund-payment-vouchers/', include('accounts.school_fund.school_fund_paymentvouchers.urls')),
     path('api/school-fund-bank-charges/', include('accounts.school_fund.school_fund_bankcharge.urls')),
     path('api/school-fund-balances/', include('accounts.school_fund.school_fund_balances.urls')),
+    path('api/school-fund-cashbook/', include('accounts.school_fund.school_fund_cashbook.urls')),
     #other files
-    # path('api/tuition-balances/', include('accounts.tuition.tuition_balances.urls')),
-    # path('api/tuition-cashbooks/', include('accounts.tuition.tuition_cashbooks.urls')),
     # path('api/tuition-ledgers/', include('accounts.tuition.tuition_ledgers.urls')),
 
 
