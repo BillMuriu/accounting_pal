@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'accounts.school_fund.school_fund_balances',
     'accounts.school_fund.school_fund_bankcharge',
     'accounts.school_fund.school_fund_cashbook',
+    'accounts.school_fund.school_fund_ledgers',
 
 # students apps
     'students.students',
