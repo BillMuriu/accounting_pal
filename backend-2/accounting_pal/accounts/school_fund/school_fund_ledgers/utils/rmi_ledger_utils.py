@@ -1,11 +1,12 @@
 from datetime import datetime
 from django.utils import timezone
 from django.db.models import Sum
-from accounts.operations.operations_paymentvouchers.models import PaymentVoucher
-from accounts.operations.operations_receipts.models import OperationReceipt
+from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt  # Import the SchoolFundReceipt model
+from accounts.school_fund.school_fund_paymentvouchers.models import SchoolFundPaymentVoucher
 
 
-def get_rmi_debits(start_date, end_date):
+# Function to get school fund rmi debits
+def get_school_fund_rmi_debits(start_date, end_date):
     debits = []
 
     # Ensure the dates are timezone-aware only if they're naive
@@ -15,7 +16,7 @@ def get_rmi_debits(start_date, end_date):
         end_date = timezone.make_aware(end_date)
 
     # Fetch Payment Vouchers within the specified period where vote_head is 'rmi'
-    payment_vouchers = PaymentVoucher.objects.filter(date__gte=start_date, date__lt=end_date, vote_head='rmi')
+    payment_vouchers = SchoolFundPaymentVoucher.objects.filter(date__gte=start_date, date__lt=end_date, vote_head='rmi')
 
     # Loop through the filtered vouchers and create debit entries (date, amount, and cashbook)
     for voucher in payment_vouchers:
@@ -28,7 +29,8 @@ def get_rmi_debits(start_date, end_date):
     return debits
 
 
-def get_rmi_credits(start_date, end_date):
+# Function to get school fund rmi credits
+def get_school_fund_rmi_credits(start_date, end_date):
     credits = []
 
     # Ensure the dates are timezone-aware only if they're naive
@@ -38,7 +40,7 @@ def get_rmi_credits(start_date, end_date):
         end_date = timezone.make_aware(end_date)
 
     # Fetch Operation Receipts within the specified period where rmi_fund is greater than 0
-    operation_receipts = OperationReceipt.objects.filter(date__gte=start_date, date__lt=end_date, rmi_fund__gt=0)
+    operation_receipts = SchoolFundReceipt.objects.filter(date__gte=start_date, date__lt=end_date, rmi_fund__gt=0)
 
     # Loop through the filtered receipts and create credit entries (date, amount, and cashbook)
     for receipt in operation_receipts:
@@ -51,10 +53,11 @@ def get_rmi_credits(start_date, end_date):
     return credits
 
 
-def get_rmi_ledger(start_date, end_date):
+# Function to get school fund rmi ledger with debits and credits
+def get_school_fund_rmi_ledger(start_date, end_date):
     # Get debits and credits
-    debits = get_rmi_debits(start_date, end_date)
-    credits = get_rmi_credits(start_date, end_date)
+    debits = get_school_fund_rmi_debits(start_date, end_date)
+    credits = get_school_fund_rmi_credits(start_date, end_date)
 
     # Calculate total debits and credits
     total_debits = sum(debit['amount'] for debit in debits)
@@ -71,6 +74,7 @@ def get_rmi_ledger(start_date, end_date):
     return ledger
 
 
+# Function to generate cashbook based on the date
 def get_cashbook(date):
     # Financial year starts on July 1st
     year = date.year
