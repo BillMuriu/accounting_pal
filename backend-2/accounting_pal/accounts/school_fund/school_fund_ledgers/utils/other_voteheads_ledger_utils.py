@@ -1,6 +1,6 @@
 from django.utils import timezone
-from accounts.school_fund.school_fund_paymentvouchers.models import SchoolFundPaymentVoucher  # Import the SchoolFundPaymentVoucher model
-from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt  # Import the SchoolFundReceipt model
+from accounts.school_fund.school_fund_paymentvouchers.models import SchoolFundPaymentVoucher
+from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt
 
 # Function to get other voteheads debits for school fund
 def get_school_fund_other_voteheads_debits(start_date, end_date):
@@ -35,18 +35,18 @@ def get_school_fund_other_voteheads_credits(start_date, end_date):
     if timezone.is_naive(end_date):
         end_date = timezone.make_aware(end_date)
 
-    # Fetch Operation Receipts within the specified period where other_voteheads is not empty
+    # Fetch Operation Receipts within the specified period where other_voteheads is greater than 0
     operation_receipts = SchoolFundReceipt.objects.filter(
-            date__gte=start_date, 
-            date__lt=end_date, 
-            other_voteheads__gt=0  # Assuming other_voteheads is a field that can be greater than 0
-        )
+        date__gte=start_date, 
+        date__lt=end_date, 
+        received_from='other_voteheads'
+    )
 
     # Loop through the filtered receipts and create credit entries (date, amount, and cashbook)
     for receipt in operation_receipts:
         credits.append({
             "date": receipt.date,
-            "amount": receipt.total_amount,  # Change this if your field name is different
+            "amount": receipt.other_voteheads,  # Ensure this field matches your model
             "cashbook": get_cashbook(receipt.date)  # Generate cashbook based on the date
         })
 

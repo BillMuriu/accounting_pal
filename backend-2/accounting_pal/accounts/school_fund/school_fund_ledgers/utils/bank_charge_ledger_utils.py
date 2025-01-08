@@ -1,5 +1,5 @@
 from django.utils import timezone
-from accounts.school_fund.school_fund_bankcharge.models import SchoolFundBankCharge  # Import SchoolFundBankCharge model
+from accounts.school_fund.school_fund_bankcharge.models import SchoolFundBankCharges # Import SchoolFundBankCharges model
 
 # Function to get school fund bank charge debits
 def get_school_fund_bankcharge_debits(start_date, end_date):
@@ -12,7 +12,7 @@ def get_school_fund_bankcharge_debits(start_date, end_date):
         end_date = timezone.make_aware(end_date)
 
     # Fetch Bank Charges within the specified period
-    bank_charges = SchoolFundBankCharge.objects.filter(charge_date__gte=start_date, charge_date__lt=end_date)
+    bank_charges = SchoolFundBankCharges.objects.filter(charge_date__gte=start_date, charge_date__lt=end_date)
 
     # Loop through the filtered charges and create debit entries (date, amount, and cashbook)
     for charge in bank_charges:

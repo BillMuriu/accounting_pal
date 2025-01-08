@@ -1,7 +1,5 @@
-from datetime import datetime
 from django.utils import timezone
-from django.db.models import Sum
-from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt  # Import the SchoolFundReceipt model
+from accounts.school_fund.school_fund_receipts.models import SchoolFundReceipt
 from accounts.school_fund.school_fund_paymentvouchers.models import SchoolFundPaymentVoucher
 
 
@@ -16,7 +14,9 @@ def get_school_fund_rmi_debits(start_date, end_date):
         end_date = timezone.make_aware(end_date)
 
     # Fetch Payment Vouchers within the specified period where vote_head is 'rmi'
-    payment_vouchers = SchoolFundPaymentVoucher.objects.filter(date__gte=start_date, date__lt=end_date, vote_head='rmi')
+    payment_vouchers = SchoolFundPaymentVoucher.objects.filter(
+        date__gte=start_date, date__lt=end_date, vote_head='rmi'
+    )
 
     # Loop through the filtered vouchers and create debit entries (date, amount, and cashbook)
     for voucher in payment_vouchers:
@@ -39,14 +39,16 @@ def get_school_fund_rmi_credits(start_date, end_date):
     if timezone.is_naive(end_date):
         end_date = timezone.make_aware(end_date)
 
-    # Fetch Operation Receipts within the specified period where rmi_fund is greater than 0
-    operation_receipts = SchoolFundReceipt.objects.filter(date__gte=start_date, date__lt=end_date, rmi_fund__gt=0)
+    # Fetch School Fund Receipts within the specified period where received_from is 'rmi'
+    school_fund_receipts = SchoolFundReceipt.objects.filter(
+        date__gte=start_date, date__lt=end_date, received_from='rmi'
+    )
 
     # Loop through the filtered receipts and create credit entries (date, amount, and cashbook)
-    for receipt in operation_receipts:
+    for receipt in school_fund_receipts:
         credits.append({
             "date": receipt.date,
-            "amount": receipt.total_amount,
+            "amount": receipt.rmi_fund,
             "cashbook": get_cashbook(receipt.date)  # Generate cashbook based on the date
         })
 
