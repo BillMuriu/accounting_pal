@@ -66,8 +66,11 @@ urlpatterns = [
     path('api/school-fund-balances/', include('accounts.school_fund.school_fund_balances.urls')),
     path('api/school-fund-cashbook/', include('accounts.school_fund.school_fund_cashbook.urls')),
     path('api/school-fund-ledger/', include('accounts.school_fund.school_fund_ledgers.urls')),
-    #other files
-    # path('api/tuition-ledgers/', include('accounts.tuition.tuition_ledgers.urls')),
+    path('api/school-fund-trialbalances/', include('accounts.school_fund.school_fund_trial_balance.urls')),
+
+
+
+
 
 
 # custom_auth
