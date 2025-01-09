@@ -1,6 +1,6 @@
 from accounts.school_fund.school_fund_ledgers.utils.rmi_ledger_utils import get_school_fund_rmi_ledger
 from accounts.school_fund.school_fund_ledgers.utils.other_voteheads_ledger_utils import get_school_fund_other_voteheads_ledger
-from accounts.school_fund.school_fund_ledgers.utils.operations_ledger_utils import get_school_fund_operations_ledger
+from accounts.school_fund.school_fund_ledgers.utils.operations_ledger_utils import get_operations_ledger
 from accounts.school_fund.school_fund_ledgers.utils.tuition_ledger_utils import get_school_fund_tuition_ledger
 from accounts.school_fund.school_fund_ledgers.utils.bank_charge_ledger_utils import get_school_fund_bankcharge_ledger
 from .balances_utils import calculate_school_fund_balances
@@ -10,7 +10,7 @@ def create_school_fund_trial_balance(start_date, end_date):
     # Get the total debits and credits for each account, defaulting to 0 if they don't exist
     rmi_ledger = get_school_fund_rmi_ledger(start_date, end_date)
     other_voteheads_ledger = get_school_fund_other_voteheads_ledger(start_date, end_date)
-    operations_ledger = get_school_fund_operations_ledger(start_date, end_date)
+    operations_ledger = get_operations_ledger(start_date, end_date)
     tuition_ledger = get_school_fund_tuition_ledger(start_date, end_date)
     bankcharge_ledger = get_school_fund_bankcharge_ledger(start_date, end_date)
 
