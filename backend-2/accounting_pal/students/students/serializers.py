@@ -16,11 +16,11 @@ class StudentSerializer(serializers.ModelSerializer):
     guardiansPhoneNumber = serializers.CharField(source='guardians_phone_number')
     gender = serializers.ChoiceField(choices=Student.GENDER_CHOICES)  # Add the gender field
 
-    # Change the names to match the method names
     opening_balance = serializers.SerializerMethodField()
     total_fees = serializers.SerializerMethodField()
     total_receipts = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
+    balance_cleared = serializers.SerializerMethodField()  # New field for balance cleared
 
     class Meta:
         model = Student
@@ -38,7 +38,8 @@ class StudentSerializer(serializers.ModelSerializer):
             'opening_balance', 
             'total_fees', 
             'total_receipts', 
-            'balance'
+            'balance',
+            'balance_cleared'  # Include new field
         ]
 
     def get_opening_balance(self, obj):
@@ -48,24 +49,6 @@ class StudentSerializer(serializers.ModelSerializer):
         return None
 
     def get_total_fees(self, obj):
-        """
-            Calculate the total fees for a student starting from their opening balance record.
-
-            This method retrieves the student's opening balance and determines all term periods 
-            that began on or after the date the opening balance was recorded. It then calculates 
-            the sum of fees for these terms.
-
-            Args:
-                obj: The student object for which the total fees need to be calculated.
-
-            Returns:
-                float: The total fees from the relevant term periods, or None if the student 
-                does not have an opening balance.
-                
-            Notes:
-                - Ensures the calculation only includes terms after the student was added to the system.
-                - Returns None if the student does not have an opening balance, indicating no fees can be calculated.
-        """
         opening_balance = StudentOpeningBalance.objects.filter(student=obj).first()
         if not opening_balance:
             return None
@@ -90,3 +73,16 @@ class StudentSerializer(serializers.ModelSerializer):
 
         balance = (opening_balance + total_fees) - total_receipts
         return balance
+
+    def get_balance_cleared(self, obj):
+        """
+        Check if the balance is cleared.
+        
+        Returns:
+            bool: True if balance <= 0, False otherwise.
+        """
+        balance = self.get_balance(obj)
+        if balance is None:
+            return None  # Optional: return None if balance cannot be calculated
+        return balance <= 0
+
