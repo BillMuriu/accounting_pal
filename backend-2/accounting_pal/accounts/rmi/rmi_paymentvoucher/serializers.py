@@ -22,6 +22,7 @@ class RMIPaymentVoucherSerializer(serializers.ModelSerializer):
             'authorised_by',
             'vote_head',  
             'vote_details',
+            'cheque_number',  # Include the new field here
             'date',
             'operation_receipt',
             'school_fund_receipt',

@@ -22,6 +22,7 @@ class RMIPaymentVoucher(models.Model):
     particulars = models.TextField()
     amount_shs = models.DecimalField(max_digits=10, decimal_places=2)
     payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES)
+    cheque_number = models.CharField(max_length=100, null=True, blank=True)
     total_amount_in_words = models.CharField(max_length=255)
     prepared_by = models.CharField(max_length=255)
     authorised_by = models.CharField(max_length=255)

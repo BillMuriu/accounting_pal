@@ -125,7 +125,7 @@ def get_rmi_cashbook(year, month):
 
     # Get Receipts (Money In)
     receipts = get_rmi_receipts_money_in(year, month)
-    cashbook_data["receipts"].extend(receipts)
+    cashbook_data["receipts"].extend(receipts["receipts"])
 
     # Get Payments (Money Out)
     payments = get_rmi_payments_money_out(year, month)
