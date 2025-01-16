@@ -46,7 +46,7 @@ def get_school_fund_other_voteheads_credits(start_date, end_date):
     for receipt in operation_receipts:
         credits.append({
             "date": receipt.date,
-            "amount": receipt.other_voteheads,  # Ensure this field matches your model
+            "amount": receipt.total_amount,  # Ensure this field matches your model
             "cashbook": get_cashbook(receipt.date)  # Generate cashbook based on the date
         })
 

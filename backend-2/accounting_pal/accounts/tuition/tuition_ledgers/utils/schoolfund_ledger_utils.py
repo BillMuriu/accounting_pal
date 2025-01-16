@@ -43,7 +43,7 @@ def get_school_fund_credits(start_date, end_date):
     for receipt in operation_receipts:
         credits.append({
             "date": receipt.date,
-            "amount": receipt.school_fund,  # Assuming you want the school_fund field as credit
+            "amount": receipt.total_amount,  # Assuming you want the school_fund field as credit
             "cashbook": get_cashbook(receipt.date)  # Generate cashbook based on the date
         })
 

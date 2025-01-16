@@ -38,7 +38,7 @@ def get_other_voteheads_credits(start_date, end_date):
     operation_receipts = TuitionReceipt.objects.filter(
             date__gte=start_date, 
             date__lt=end_date, 
-            received_from='school_fund'
+            received_from='other_voteheads'
         )
 
 
@@ -46,7 +46,7 @@ def get_other_voteheads_credits(start_date, end_date):
     for receipt in operation_receipts:
         credits.append({
             "date": receipt.date,
-            "amount": receipt.other_voteheads,  # Change this if your field name is different
+            "amount": receipt.total_amount,  # Change this if your field name is different
             "cashbook": get_cashbook(receipt.date)  # Generate cashbook based on the date
         })
 
