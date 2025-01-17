@@ -6,7 +6,7 @@ from accounts.rmi.rmi_receipts.serializers import RMIReceiptSerializer
 from accounts.tuition.tuition_receipts.serializers import TuitionReceiptSerializer
 
 
-class ListCreateSchoolFundPaymentVoucherView(generics.CreateAPIView):
+class ListCreateSchoolFundPaymentVoucherView(generics.ListCreateAPIView):
     queryset = SchoolFundPaymentVoucher.objects.all()
     serializer_class = SchoolFundPaymentVoucherSerializer
 

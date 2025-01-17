@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
+
 EMAIL_BACKEND=os.environ['EMAIL_BACKEND']
 EMAIL_HOST=os.environ['EMAIL_HOST']
 EMAIL_PORT=os.environ['EMAIL_PORT']
@@ -30,7 +32,8 @@ SECRET_KEY = 'django-insecure-c=npkc5#jov8cw-j*$x8panrs=posr101iiqig#2qgwfpcaw6-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
 
 # settings.py
 # AUTH_USER_MODEL = 'custom_auth.CustomUser'
@@ -135,13 +138,22 @@ WSGI_APPLICATION = 'accounting_pal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'newdb',
+        'USER': 'newuser',
+        'PASSWORD': 'newpassword',
+        'HOST': 'localhost',
+        'PORT': '', 
     }
 }
-
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
